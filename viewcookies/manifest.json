@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "Display Cookies",
+    "version": "1.0",
+    "description": "Displays the current tab's cookies in a tabular format.",
+    "permissions": [
+        "cookies",
+        "activeTab",
+        "storage",
+        "tabs"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icon16.png",
+            "48": "icon48.png",
+            "128": "icon128.png"
+        },
+        "default_popup_height": 600,
+        "default_popup_width": 600
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}

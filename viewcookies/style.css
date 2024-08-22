@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    background-color: #fefe95;
+    width: 600px;
+    height: 600px;
+}
+
+h1 {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 18px;
+}
+
+.content {
+    border: 1px solid green;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+
+.btn {
+    background: transparent;
+    border: 0 none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+input[type="text"],
+button {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+button {
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFF;
+    word-wrap: break-word;
+    font-size: 13px;
+    padding: 5px;
+    text-align: center;
+    table-layout: fixed;
+}
+
+.copy-icon {
+    user-select: none;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    fill: currentcolor;
+    flex-shrink: 0;
+    font-size: 13px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+#noCookiesMessage {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+}
