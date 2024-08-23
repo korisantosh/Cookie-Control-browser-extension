@@ -2,43 +2,55 @@
 <html>
   <head>
     <title>Cookies Display</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@materializecss/materialize@2.1.0/dist/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
     <h1>Current Tab Cookies</h1>
-    
     <!-- Search input field -->
-    <input type="text" id="searchInput" placeholder="Search cookies by name..." />
-
+    <div class="filter-cookies">
+      <div class="s12 m6 input-field outlined">
+        <input type="text" id="searchInput" placeholder=" " />
+        <label class="active" for="searchInput">Search Cookie</label>
+      </div>
+    </div>
     <div class="content">
-    <table id="cookiesTable">
-      <thead>
-        <tr>
-          <th>Cookie Name</th>
-          <th>Value</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="cookiesBody">
-        <!-- Cookies will be injected here -->
-      </tbody>
-    </table>
-</div>
-
+      <table id="cookiesTable" class="highlight">
+        <thead>
+          <tr>
+            <th width="40%">Cookie Name</th>
+            <th width="60%">Value</th>
+          </tr>
+        </thead>
+        <tbody id="cookiesBody">
+          <!-- Cookies will be injected here -->
+        </tbody>
+      </table>
+    </div>
     <!-- Message to display when no cookies match the search -->
-    <p id="noCookiesMessage" style="display: none;">No cookies found</p>
-
+    <p id="noCookiesMessage" style="display: none">No cookies found</p>
     <!-- Form to add or update cookies -->
     <h2>Add or Update Cookie</h2>
-    <form id="cookieForm">
-      <label for="cookieName">Name:</label>
-      <input type="text" id="cookieName" required><br>
-
-      <label for="cookieValue">Value:</label>
-      <input type="text" id="cookieValue" required><br>
-
-      <button type="submit" id="cookieSubmitButton">Add/Update Cookie</button>
+    <form class="row update-cookie" id="cookieForm">
+      <div class="s12 m4 input-field outlined">
+        <input type="text" id="cookieName" placeholder=" " required />
+        <label class="active" for="cookieName">Name:</label>
+      </div>
+      <div class="s12 m4 input-field outlined">
+        <input type="text" id="cookieValue" placeholder=" "  required />
+        <label class="active" for="cookieValue">Value:</label>
+      </div>
+      <div class="s12 m4 input-field outlined">
+        <button type="submit" class="btn elevated" id="addCookieButton"><?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1 Tiny//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd'><svg baseProfile="tiny" height="32px" version="1.1" viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Guides__x26__Forms"/><g id="Icons"><polygon points="25,15 17,15 17,7 15,7 15,15 7,15 7,17 15,17 15,25 17,25 17,17 25,17  "/></g></svg> Add/Update Cookie</button>
+      </div>
     </form>
+    <div id="copySuccess" class="toast-wrapper hide"><div class="toast-message">Copied! <button class="close-copied">X</button></div></div>
+
     <script src="popup.js"></script>
   </body>
 </html>

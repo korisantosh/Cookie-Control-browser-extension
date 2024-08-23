@@ -1,10 +1,22 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const cookies = await chrome.cookies.getAll({ url: tab.url });
-
   const cookiesBody = document.getElementById("cookiesBody");
   const noCookiesMessage = document.getElementById("noCookiesMessage");
   const cookieForm = document.getElementById("cookieForm");
+  const cookieNameInput = document.getElementById("cookieName");
+  const cookieValueInput = document.getElementById("cookieValue");
+  const addCookieButton = document.getElementById("addCookieButton");
+  // Enable button when both fields have values
+  const validateInputs = () => {
+    const isCookieNameFilled = cookieNameInput.value.trim() !== "";
+    const isCookieValueFilled = cookieValueInput.value.trim() !== "";
+    addCookieButton.disabled = !(isCookieNameFilled && isCookieValueFilled);
+  };
+
+  // Listen for input changes on both fields
+  cookieNameInput.addEventListener("input", validateInputs);
+  cookieValueInput.addEventListener("input", validateInputs);
 
   // Function to render the cookies in the table
   function renderCookies(cookiesList) {
@@ -12,20 +24,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     cookiesList.forEach((cookie) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-          <td>${cookie.name} <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium copy-icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ContentCopyIcon"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg></td>
-          <td><span title="${cookie.value}" class="text-ellipsis">${cookie.value}</span></td>
-          <td>
-            <button title="Copy Cookie" id="copyCookie" class="btn btn-copy">COPY</button>
-            <button class="btn btn-edit" data-cookie-name="${cookie.name}" data-cookie-domain="${cookie.domain}">Edit</button>
-          </td>
+          <td><div class="cookie-item"><span title="${cookie.name}" class="text-ellipsis">${cookie.name}</span><span class="action-ctas"><svg class="copy-cookie-icon" data-cookie="${cookie.name}" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ContentCopyIcon"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg></span></div></div></td>
+          <td class="cookie-value"><div class="cookie-item"><span title="${cookie.value}" class="text-ellipsis">${cookie.value}</span><span class="action-ctas"><svg title="Copy Cookie" class="copy-cookie-icon" data-cookie="${cookie.value}"  focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ContentCopyIcon"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg><svg class="edit-icon" title="Edit Cookie" data-cookie-name="${cookie.name}" data-cookie-value="${cookie.value}" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="EditIcon"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg></span></div></td>
         `;
       cookiesBody.appendChild(row);
+      // Add event listener for copy button
+      // const copyButton = row.querySelector('.copy-cookie-icon');
+      // copyButton.addEventListener('click', () => { copyToClipboard(cookie.value); console.log('copy cookie:', cookie.value); });
     });
   }
-
   // Initial rendering of all cookies
   renderCookies(cookies);
-
   // Search filter logic
   const searchInput = document.getElementById("searchInput");
   searchInput.addEventListener("input", (e) => {
@@ -33,7 +42,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filteredCookies = cookies.filter((cookie) =>
       cookie.name.toLowerCase().includes(searchTerm)
     );
-
     if (filteredCookies.length > 0) {
       renderCookies(filteredCookies);
       noCookiesMessage.style.display = "none";
@@ -42,57 +50,110 @@ document.addEventListener("DOMContentLoaded", async () => {
       noCookiesMessage.style.display = "block";
     }
   });
-
   // Function to add or update cookies
   cookieForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const name = document.getElementById("cookieName").value;
-    const value = document.getElementById("cookieValue").value;
-    const domain = document.getElementById("cookieDomain").value;
-    const path = document.getElementById("cookiePath").value;
-
-    try {
-      // Add or update the cookie
-      await chrome.cookies.set({
-        url: tab.url,
-        name: name,
-        value: value,
-        domain: domain,
-        path: path,
+    const cookieName = cookieNameInput.value.trim();
+    const cookieValue = cookieValueInput.value.trim();
+    // const domain = document.getElementById("cookieDomain").value;
+    // const path = document.getElementById("cookiePath").value;
+    if (cookieName && cookieValue) {
+      // Add the cookie to the current tab's domain
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        const url = new URL(tab.url);
+        chrome.cookies.set(
+          {
+            url: url.origin, // Use the origin of the current tab
+            name: cookieName,
+            value: cookieValue,
+          },
+          (cookie) => {
+            if (cookie) {
+              console.log("Cookie added:", cookie);
+            } else {
+              console.error("Failed to add cookie");
+            }
+          }
+        );
       });
-
-      // Reload cookies after setting a new one
-      const updatedCookies = await chrome.cookies.getAll({ url: tab.url });
-      renderCookies(updatedCookies);
-
-      // Reset form
-      cookieForm.reset();
-      alert("Cookie added/updated successfully!");
-    } catch (error) {
-      console.error("Error setting cookie:", error);
-      alert("Failed to add/update cookie");
+      // Clear the inputs after adding the cookie
+      cookieNameInput.value = "";
+      cookieValueInput.value = "";
+      validateInputs(); // Re-disable the button
     }
   });
-
   // Edit existing cookie by pre-filling the form
   document.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("edit-btn")) {
+    // Check if the target is a <path> element inside an <svg>
+    if (e.target.tagName === 'path' || e.target.closest('path')) {
+      // Prevent click actions on the <path> element
+      e.stopPropagation(); // Prevent the event from propagating
+      e.preventDefault();  // Prevent the default click action
+      console.log("Click on <path> element prevented");
+      return;
+    }
+    if (e.target.classList.contains("copy-cookie-icon")) {
+      const cookieName = e.target.getAttribute("data-cookie");
+      console.log("cookieName", cookieName);
+      copyToClipboard(cookieName);
+    }
+    if (e.target.classList.contains("edit-icon")) {
       const cookieName = e.target.getAttribute("data-cookie-name");
-      const cookieDomain = e.target.getAttribute("data-cookie-domain");
-
+      console.log("cookieName to edit:", cookieName);
       // Get the specific cookie and fill the form with its data
       const cookieToEdit = await chrome.cookies.get({
         name: cookieName,
         url: tab.url,
       });
-
       if (cookieToEdit) {
         document.getElementById("cookieName").value = cookieToEdit.name;
         document.getElementById("cookieValue").value = cookieToEdit.value;
-        document.getElementById("cookieDomain").value = cookieToEdit.domain;
-        document.getElementById("cookiePath").value = cookieToEdit.path;
       }
     }
+    if (e.target.classList.contains("close-copied")) {
+      document.getElementById("copySuccess").classList.add("hide");
+    }
   });
+
+  function hideCopySuccess() {
+    setTimeout(function () {
+      document.getElementById("copySuccess").classList.add("hide");
+    }, 2000);
+  }
+
+  function copyToClipboard(text) {
+    console.log("copyToClipboard", text);
+    if (navigator.clipboard && window.isSecureContext) {
+      // Use the modern Clipboard API for secure contexts
+      return navigator.clipboard
+        .writeText(text)
+        .then(function () {
+          console.log("Text copied to clipboard!");
+          document.getElementById("copySuccess").classList.remove("hide");
+          hideCopySuccess();
+        })
+        .catch(function (err) {
+          console.error("Failed to copy: ", err);
+        });
+    } else {
+      // Fallback for older browsers and non-secure contexts
+      let textArea = document.createElement("textarea");
+      textArea.value = text;
+      // Avoid scrolling to bottom on iOS devices
+      textArea.style.position = "absolute";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        console.log("Text copied to clipboard!");
+        document.getElementById("copySuccess").classList.remove("hide");
+        hideCopySuccess();
+      } catch (err) {
+        console.error("Failed to copy: ", err);
+      }
+      document.body.removeChild(textArea);
+    }
+  }
 });

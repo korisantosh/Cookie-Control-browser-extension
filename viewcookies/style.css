@@ -2,34 +2,54 @@ body {
     font-family: Arial, sans-serif;
     padding: 10px;
     background-color: #fefe95;
-    width: 600px;
-    height: 600px;
+    width: 800px;
+    height: 400px;
 }
 
 h1 {
     font-family: "Segoe UI", Tahoma, sans-serif;
     font-size: 18px;
+    margin: 10px 0 20px;
+    text-align: center;
+    font-weight: 700;
 }
 
 .content {
-    border: 1px solid green;
+    border: 1px solid #36304a;
     margin-right: 20px;
     margin-top: 10px;
+    border-radius: 16px;
 }
 
 .btn {
     background: transparent;
     border: 0 none;
     padding: 0;
-    margin: 0;
+    margin: 0 5px;
     cursor: pointer;
+    display: inline-block;
+    width: auto;
+    height: 20px;
 }
 .text-ellipsis {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    width: 250px;
+    padding-right: 65px;
 }
+.cookie-item {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.5em;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+td:hover .action-ctas { display: inline-block;}
+.action-ctas { display: none; position: absolute; right: 0; z-index: 10; }
 input[type="text"],
 button {
     margin-bottom: 10px;
@@ -48,36 +68,156 @@ table {
     border-collapse: collapse;
     background-color: #FFF;
     word-wrap: break-word;
-    font-size: 13px;
+    font-size: 15px;
     padding: 5px;
     text-align: center;
     table-layout: fixed;
+    border: 0 none;
+    border-radius: 16px;
+    box-shadow: 1px 2px 13px #00000080;
 }
 
-.copy-icon {
+.copy-cookie-icon,.edit-icon {
     user-select: none;
-    width: 1em;
-    height: 1em;
+    width: 20px;
+    height: 20px;
     display: inline-block;
     fill: currentcolor;
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 20px;
     transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    margin: 0 10px;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
+    border: 0px solid #ddd;
     padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+thead, thead tr {
+    border-radius: 16px 16px 0 0;
 }
 
 th {
-    background-color: #f2f2f2;
-    text-align: left;
+    background-color: #36304a;
+    text-align: center;
+    color: white;
+    font-weight: 700;
+    padding: 12px;
 }
+
+th:first-child {
+    border-radius: 16px 0 0 0;
+}
+
+th:last-child {
+    border-radius: 0 16px 0 0;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #ffc;
+}
+
+tbody tr:last-child {
+    border: 0 none;
+    border-radius: 0 0 16px 16px;
+}
+
+tbody tr:last-child td:first-child {
+    border-radius: 0 0 0 16px;
+}
+tbody tr:last-child td:last-child {
+    border-radius: 0 0 16px 0;
+}
+
 
 #noCookiesMessage {
     color: red;
     font-weight: bold;
     text-align: center;
+}
+.filter-cookies {
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.toast-wrapper {
+    position: fixed;
+    bottom: 15px;
+    text-align: center;
+    width: 100%;
+}
+.toast-message {
+    background-color: rgb(0 0 0 / 76%);
+    color: #FFF;
+    padding: 10px 20px;
+    font-size: 16px;
+    display: inline-block;
+    width: 250px;
+    text-align: left;
+    border-radius: 4px;
+}
+
+.hide {
+    display: none !important;
+}
+
+.close-copied {
+    background: transparent;
+    border: 0 none;
+    color: #fff;
+    padding: 0 4px;
+    margin: 0;
+    width: auto;
+    float: right;
+}
+
+#searchInput {
+    height: 40px;
+}
+.filter-cookies .input-field>label {
+    top: 10px;
+}
+
+h2 {
+    margin: 35px 0 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.update-cookie .btn {
+    height: 40px;
+    padding: 0 20px 0 45px;
+    color: #FFF;
+    background-color: #2d273f;
+}
+.update-cookie .input-field>label {
+    top: 10px;
+}
+.update-cookie .input-field.outlined input{
+    height: 40px;
+}
+.input-field.outlined input:focus:not([readonly])+label, .input-field.outlined input:not([placeholder=" "])+label, .input-field.outlined input:not(:placeholder-shown)+label, .input-field.outlined textarea:focus:not([readonly])+label, .input-field.outlined textarea:not([placeholder=" "])+label, .input-field.outlined textarea:not(:placeholder-shown)+label {
+    background-color: #fefe95;
+    color: #000;
+}
+.update-cookie .btn svg {
+    position: absolute;
+    left: 15px;
+    top: 5px;
+    width: 22px;
+}
+
+svg path {
+    pointer-events: none;
 }

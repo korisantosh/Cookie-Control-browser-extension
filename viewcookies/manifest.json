@@ -16,8 +16,8 @@
             "48": "icon48.png",
             "128": "icon128.png"
         },
-        "default_popup_height": 600,
-        "default_popup_width": 600
+        "default_popup_height": 800,
+        "default_popup_width": 400
     },
     "host_permissions": [
         "<all_urls>"
