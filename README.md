@@ -24,7 +24,7 @@
 ### Manual using Github
 1. Download [CookieControl.zip](https://github.com/korisantosh/Cookie-Control-chrome-extension/blob/02095e47f7e16f1dcb01551648c4c48f6b39bc28/cookiecontrol.zip)
 2. Extract CookieControl.zip in your preferable location
-3. Opew URL in chrome `chrome://extensions/`
+3. Open URL in chrome `chrome://extensions/`
 4. Click On Load Unpacked button from top left section
 5. Select Extracted **cookiecontrol** folder.
 6. It will start Visible in Browser Extension List.

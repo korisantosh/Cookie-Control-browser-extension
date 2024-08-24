@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Display Cookies",
+    "name": "Cookie Control",
     "version": "1.0",
     "description": "Enables you to view, edit, add, delete, and search cookies",
     "permissions": [
