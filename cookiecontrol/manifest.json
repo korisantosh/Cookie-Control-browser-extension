@@ -5,9 +5,7 @@
     "description": "Enables you to view, edit, add, delete, and search cookies",
     "permissions": [
         "cookies",
-        "activeTab",
-        "storage",
-        "tabs"
+        "activeTab"
     ],
     "action": {
         "default_popup": "popup.html",
@@ -19,9 +17,7 @@
         "default_popup_height": 800,
         "default_popup_width": 400
     },
-    "host_permissions": [
-        "<all_urls>"
-    ],
+    "host_permissions": ["http://*/*", "https://*/*"],
     "background": {
         "service_worker": "background.js"
     }

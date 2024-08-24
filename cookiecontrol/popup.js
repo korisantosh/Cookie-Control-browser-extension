@@ -26,9 +26,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Listen for input changes on both fields
   cookieNameInput.addEventListener("input", validateInputs);
   cookieValueInput.addEventListener("input", validateInputs);
-
   async function getAllCookies() {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
     cookies = await chrome.cookies.getAll({ url: tab.url });
     renderCookies(cookies);
   }
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return 0;
     });
     cookiesBody.innerHTML = "";
-    if(cookiesList.length > 0) {
+    if (cookiesList.length > 0) {
       document.body.classList.remove("no-cookies");
       cookiesList.forEach((cookie, index) => {
         const row = document.createElement("tr");
@@ -59,7 +61,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Search filter logic
   searchInput.addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    const hasValue = (searchTerm.trim().length > 0) ? searchInput.classList.add("has-value") : searchInput.classList.remove("has-value");
+    const hasValue =
+      searchTerm.trim().length > 0
+        ? searchInput.classList.add("has-value")
+        : searchInput.classList.remove("has-value");
     const filteredCookies = cookies.filter((cookie) =>
       cookie.name.toLowerCase().includes(searchTerm)
     );
@@ -213,73 +218,91 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
   // Function to delete a specific cookie and remove the corresponding row
-function deleteCookie(cookieName, rowID) {
-  // Get the current active tab
-  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    const activeTab = tabs[0];
-    const tabUrl = activeTab.url;
-
-    // Get all cookies for the active tab's URL
-    chrome.cookies.getAll({ url: tabUrl }, function(cookies) {
-    // Log all cookies for debugging
-    console.log("Cookies found:", cookies);
-    // Find the cookie by name
-    const targetCookie = cookies.find(cookie => cookie.name === cookieName);
-
-    if (targetCookie) {
-      // Construct the cookie URL
-      const cookieUrl = "http" + (targetCookie.secure ? "s" : "") + "://" + targetCookie.domain + targetCookie.path;
-
-      // Delete the cookie using chrome.cookies.remove
-      chrome.cookies.remove({
-        url: cookieUrl,
-        name: targetCookie.name
-      }, () => {
-        // Check if the cookie was successfully deleted
-        if (chrome.runtime.lastError) {
-          showToastMessage(`Error deleting cookie: ${chrome.runtime.lastError}`);
-          console.error(`Error deleting cookie: ${chrome.runtime.lastError}`);
+  function deleteCookie(cookieName, rowID) {
+    // Get the current active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const tabUrl = activeTab.url;
+      // Get all cookies for the active tab's URL
+      chrome.cookies.getAll({ url: tabUrl }, function (cookies) {
+        // Log all cookies for debugging
+        console.log("Cookies found:", cookies);
+        // Find the cookie by name
+        const targetCookie = cookies.find(
+          (cookie) => cookie.name === cookieName
+        );
+        if (targetCookie) {
+          // Construct the cookie URL
+          const cookieUrl =
+            "http" +
+            (targetCookie.secure ? "s" : "") +
+            "://" +
+            targetCookie.domain +
+            targetCookie.path;
+          // Delete the cookie using chrome.cookies.remove
+          chrome.cookies.remove(
+            {
+              url: cookieUrl,
+              name: targetCookie.name,
+            },
+            () => {
+              // Check if the cookie was successfully deleted
+              if (chrome.runtime.lastError) {
+                showToastMessage(
+                  `Error deleting cookie: ${chrome.runtime.lastError}`
+                );
+                console.error(
+                  `Error deleting cookie: ${chrome.runtime.lastError}`
+                );
+              } else {
+                // Remove the corresponding row from the table
+                const rowElement = document.getElementById(rowID);
+                if (rowElement) {
+                  rowElement.remove();
+                  console.log(
+                    `Cookie "${cookieName}" deleted and row "${rowID}" removed.`
+                  );
+                  showToastMessage(`Cookie "${cookieName}" deleted.`);
+                  hideCopySuccess();
+                }
+              }
+            }
+          );
         } else {
-          // Remove the corresponding row from the table
-          const rowElement = document.getElementById(rowID);
-          if (rowElement) {
-            rowElement.remove();
-            console.log(`Cookie "${cookieName}" deleted and row "${rowID}" removed.`);
-            showToastMessage(`Cookie "${cookieName}" deleted.`);
-            hideCopySuccess();
-          }
+          console.log(`Cookie "${cookieName}" not found.`);
         }
       });
-    } else {
-      console.log(`Cookie "${cookieName}" not found.`);
-    }
-  });
-  });
-}
-  // Function to delete all cookies for the current tab's domain
-function deleteAllCookies() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    const activeTab = tabs[0];
-    const tabUrl = activeTab.url;
-    chrome.cookies.getAll({ url: tabUrl }, function(cookies) {
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        // Construct the cookie URL from its domain
-        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
-        // Remove the cookie by name
-        chrome.cookies.remove({
-          url: cookieUrl,
-          name: cookie.name
-        });
-      }
-      // Notify user that cookies have been deleted
-      while (cookiesBody.firstChild) {
-        cookiesBody.removeChild(cookiesBody.firstChild);
-      }
-      console.log('All cookies deleted!');
-      showToastMessage(`All cookies deleted!`);
-      document.body.classList.add("no-cookies");
     });
-  });
-}
+  }
+  // Function to delete all cookies for the current tab's domain
+  function deleteAllCookies() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const activeTab = tabs[0];
+      const tabUrl = activeTab.url;
+      chrome.cookies.getAll({ url: tabUrl }, function (cookies) {
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i];
+          // Construct the cookie URL from its domain
+          var cookieUrl =
+            "http" +
+            (cookie.secure ? "s" : "") +
+            "://" +
+            cookie.domain +
+            cookie.path;
+          // Remove the cookie by name
+          chrome.cookies.remove({
+            url: cookieUrl,
+            name: cookie.name,
+          });
+        }
+        // Notify user that cookies have been deleted
+        while (cookiesBody.firstChild) {
+          cookiesBody.removeChild(cookiesBody.firstChild);
+        }
+        console.log("All cookies deleted!");
+        showToastMessage(`All cookies deleted!`);
+        document.body.classList.add("no-cookies");
+      });
+    });
+  }
 });
