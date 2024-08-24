@@ -434,3 +434,12 @@ body.no-cookies #noCookies {
 
 body.add-cookie .updateCookieWrapper { display: block;}
 body.add-cookie #topActions { display: none;}
+
+body.all-deleted #content,
+body.all-deleted .icon-delete-all,
+body.all-deleted .filter-cookies {
+    display: none;
+}
+body.all-deleted #noCookies {
+    display: flex;
+}

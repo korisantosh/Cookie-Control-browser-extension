@@ -1,16 +1,16 @@
-# Cookie Control - View, Edit, Add, Delete & Search Chrome Browser Cookies
+# 🍪 Cookie Control - View, Edit, Add, Delete & Search Chrome Browser Cookies
 
 ## Overview
 
-**Cookie Control** is a powerful Chrome extension that enables you to **view**, **edit**, **add**, **delete**, and **search** cookies directly from your browser. Whether you're a developer testing cookies, or a power user looking to manage your privacy and browsing experience, this extension offers an intuitive and easy-to-use interface for all your cookie needs.
+**Cookie Control** is a powerful Chrome extension that enables you to view, edit, add, delete, and search cookies directly from your browser. Whether you're a developer testing cookies, or a power user looking to manage your privacy and browsing experience, this extension offers an intuitive and easy-to-use interface for all your cookie needs.
 
-## Features
+## 🚀 Features
 
-- **View Cookies**: Instantly view all cookies stored in your browser for any site or domain.
-- **Edit Cookies**: Modify existing cookie values, expiry dates, and other parameters in real-time.
-- **Add New Cookies**: Effortlessly create new cookies and define their attributes with a simple form.
-- **Delete Cookies**: Remove unwanted cookies with a single click.
-- **Search Cookies**: Quickly search for cookies by name or value, helping you find exactly what you need in seconds.
+- View Cookies: Instantly view all cookies stored in your browser for any site or domain.
+- Edit Cookies: Modify existing cookie values, expiry dates, and other parameters in real-time.
+- Add New Cookies: Effortlessly create new cookies and define their attributes with a simple form.
+- Delete Cookies: Remove unwanted cookies with a single click.
+- Search Cookies: Quickly search for cookies by name or value, helping you find exactly what you need in seconds.
 
 ## Why Use Cookie Control?
 
@@ -19,7 +19,7 @@
 3. **User-Friendly Interface**: Our extension is designed to be straightforward, with an intuitive UI that makes cookie management simple, even for non-technical users.
 4. **Powerful Filtering**: Search and filter cookies efficiently, no matter how many cookies your browser stores.
 
-## Installation
+## 📦 Installation
 
 ### Manual using Github
 1. Download [CookieControl.zip](https://github.com/korisantosh/Cookie-Control-chrome-extension/blob/02095e47f7e16f1dcb01551648c4c48f6b39bc28/cookiecontrol.zip)
@@ -38,7 +38,7 @@
 3. Once installed, the Cookie Control icon will appear in your Chrome toolbar.
 4. Ping it, to make visible on top.
 
-## How to Use
+## ❓ How to Use
 
 1. **Access Cookie Control**: Click the Cookie Control icon in your Chrome toolbar to open the extension.
 2. **View Cookies**: The extension will display all cookies for the currently active tab. Use the filter to search cookies by name or value.
@@ -46,7 +46,7 @@
 4. **Add Cookies**: Click the "Add Cookie" button, fill in the required details (name, value, domain, etc.), and hit save.
 5. **Delete Cookies**: Click the trash icon next to any cookie to delete it immediately.
 
-## Screenshots
+## 🎨 Screenshots
 
 ![Cookie Control - Main Interface](#)
 *Manage cookies with ease using our clean and simple UI.*
@@ -54,12 +54,12 @@
 ![Cookie Control - Edit Cookies](#)
 *Easily modify cookie properties like values and expiry dates.*
 
-## Technical Details
+## ⚙️ Technical Details
 
 - **Permissions**: The extension only accesses the cookies of the currently active tab and requires permission to "Read and change your data on websites you visit."
 - **Compatibility**: Works with all modern versions of Chrome (v80+).
 
-## Contributing
+## 👬 Contributing
 
 We welcome contributions to enhance **Cookie Control**! If you would like to contribute, please:
 

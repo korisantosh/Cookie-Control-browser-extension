@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const cookies = await chrome.cookies.getAll({ url: tab.url });
+  let cookies = await chrome.cookies.getAll({ url: tab.url });
   const cookiesBody = document.getElementById("cookiesBody");
   const cookieForm = document.getElementById("cookieForm");
   const cookieNameInput = document.getElementById("cookieName");
@@ -29,11 +29,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function getAllCookies() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const cookies = await chrome.cookies.getAll({ url: tab.url });
+    cookies = await chrome.cookies.getAll({ url: tab.url });
     renderCookies(cookies);
   }
   // Function to render the cookies in the table
   function renderCookies(cookiesList) {
+    cookiesList.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
     cookiesBody.innerHTML = "";
     if(cookiesList.length > 0) {
       document.body.classList.remove("no-cookies");
@@ -150,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.body.classList.remove("add-cookie");
     }
     if (e.target.classList.contains("addnew")) {
+      document.body.classList.remove("all-deleted");
       document.body.classList.add("add-cookie");
       addUpdateCTA.innerText = addTitle;
       updateCookieWrapper.classList.remove("hide");
@@ -161,6 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (e.target.classList.contains("icon-delete-all")) {
       deleteAllCookies();
+      document.body.classList.add("all-deleted");
     }
   });
   function showToastMessage(msg) {
@@ -269,8 +276,8 @@ function deleteAllCookies() {
       while (cookiesBody.firstChild) {
         cookiesBody.removeChild(cookiesBody.firstChild);
       }
-      console.log('All cookies deleted for the current domain.');
-      showToastMessage(`All cookies deleted for the current domain.`);
+      console.log('All cookies deleted!');
+      showToastMessage(`All cookies deleted!`);
       document.body.classList.add("no-cookies");
     });
   });
