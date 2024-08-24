@@ -22,7 +22,7 @@
 ## Installation
 
 ### Manual using Github
-1. Download [CookieControl.zip](https://github.com/korisantosh/Cookie-Control-chrome-extension/blob/main/cookiecontrol/cookiecontrol.zip)
+1. Download [CookieControl.zip](https://github.com/korisantosh/Cookie-Control-chrome-extension/blob/02095e47f7e16f1dcb01551648c4c48f6b39bc28/cookiecontrol.zip)
 2. Extract CookieControl.zip in your preferable location
 3. Opew URL in chrome `chrome://extensions/`
 4. Click On Load Unpacked button from top left section
