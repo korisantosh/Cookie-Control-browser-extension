@@ -8,12 +8,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const addCookieButton = document.getElementById("addCookieButton");
   const updateTitle = "Update";
   const addTitle = "Add";
+  const textCopied = "Copied!";
   const updateCookieWrapper = document.getElementById("updateCookieWrapper");
   const content = document.getElementById("content");
   const noCookieRow = document.getElementById("noCookieRow");
+  const noCookiesFound = document.getElementById("noCookies");
   const topActions = document.getElementById("topActions");
   const addUpdateCTA = document.getElementById("addUpdateCTA");
   const searchInput = document.getElementById("searchInput");
+  const toastMessage = document.getElementById("toastMessage");
   // Enable button when both fields have values
   const validateInputs = () => {
     const isCookieNameFilled = cookieNameInput.value.trim() !== "";
@@ -23,20 +26,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Listen for input changes on both fields
   cookieNameInput.addEventListener("input", validateInputs);
   cookieValueInput.addEventListener("input", validateInputs);
+
+  async function getAllCookies() {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const cookies = await chrome.cookies.getAll({ url: tab.url });
+    renderCookies(cookies);
+  }
   // Function to render the cookies in the table
   function renderCookies(cookiesList) {
-    cookiesBody.innerHTML = ""; // Clear previous content
-    cookiesList.forEach((cookie, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-          <td id="row-${index}"><div class="cookie-item"><span title="${cookie.name}" class="text-ellipsis">${cookie.name}</span><span class="action-ctas"><svg class="copy-cookie-icon" data-cookie="${cookie.name}" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg></span></div></div></td>
-          <td class="cookie-value"><div class="cookie-item"><span title="${cookie.value}" class="text-ellipsis">${cookie.value}</span><span class="action-ctas"><svg title="Copy Cookie" class="copy-cookie-icon" data-cookie="${cookie.value}"  focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg><svg class="edit-icon" title="Edit Cookie" data-row-index="row-${index}" data-cookie-name="${cookie.name}" data-cookie-value="${cookie.value}" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg><button class="btn-delete" data-cookie-name="${cookie.name}" data-row-index="row-${index}">Delete</button></span></div></td>
-        `;
-      cookiesBody.appendChild(row);
-    });
+    cookiesBody.innerHTML = "";
+    if(cookiesList.length > 0) {
+      document.body.classList.remove("no-cookies");
+      cookiesList.forEach((cookie, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td id="row-${index}"><div class="cookie-item"><span title="${cookie.name}" class="text-ellipsis">${cookie.name}</span><span class="action-ctas"><button title="Copy Name" class="btn-copy" data-cookie-name="${cookie.name}"></button></span></div></div></td>
+            <td class="cookie-value"><div class="cookie-item"><span title="${cookie.value}" class="text-ellipsis">${cookie.value}</span><span class="action-ctas"><button title="Copy Value" class="btn-copy" data-cookie-name="${cookie.value}"></button><button class="edit-icon icon-edit" title="Edit Cookie" data-row-index="row-${index}" data-cookie-name="${cookie.name}" data-cookie-value="${cookie.value}"></button><button class="btn-delete"  title="Delete Cookie" data-cookie-name="${cookie.name}" data-row-index="row-${index}"></button></span></div></td>
+          `;
+        cookiesBody.appendChild(row);
+      });
+    } else {
+      document.body.classList.add("no-cookies");
+    }
   }
   // Initial rendering of all cookies
-  renderCookies(cookies);
+  getAllCookies();
   // Search filter logic
   searchInput.addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -45,11 +59,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       cookie.name.toLowerCase().includes(searchTerm)
     );
     if (filteredCookies.length > 0) {
+      document.body.classList.remove("no-cookies");
       renderCookies(filteredCookies);
       noCookieRow.classList.add("hide");
     } else {
       cookiesBody.innerHTML = ""; // Clear the table if no cookies match
       noCookieRow.classList.remove("hide");
+      document.body.classList.add("no-cookies");
     }
   });
   // Function to add or update cookies
@@ -73,6 +89,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           (cookie) => {
             if (cookie) {
               console.log("Cookie added:", cookie);
+              showToastMessage(`Cookie "${cookieName}" added.`);
+              content.classList.remove("hide");
+              document.body.classList.remove("no-cookies");
+              topActions.classList.remove("hide");
+              updateCookieWrapper.classList.add("hide");
+              document.body.classList.remove("add-cookie");
+              getAllCookies();
             } else {
               console.error("Failed to add cookie");
             }
@@ -95,8 +118,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("Click on <path> element prevented");
       return;
     }
-    if (e.target.classList.contains("copy-cookie-icon")) {
-      const cookieName = e.target.getAttribute("data-cookie");
+    if (e.target.classList.contains("btn-copy")) {
+      const cookieName = e.target.getAttribute("data-cookie-name");
       console.log("cookieName", cookieName);
       copyToClipboard(cookieName);
     }
@@ -124,18 +147,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       topActions.classList.remove("hide");
       updateCookieWrapper.classList.add("hide");
       content.classList.remove("hide");
+      document.body.classList.remove("add-cookie");
     }
     if (e.target.classList.contains("addnew")) {
-      topActions.classList.add("hide");
+      document.body.classList.add("add-cookie");
       addUpdateCTA.innerText = addTitle;
       updateCookieWrapper.classList.remove("hide");
     }
     if (e.target.classList.contains("btn-delete")) {
       const cookieName = e.target.getAttribute("data-cookie-name");
       const rowIndex = e.target.getAttribute("data-row-index");
-      deleteCookie(cookieName, document.getElementById(rowIndex));
+      deleteCookie(cookieName, rowIndex);
+    }
+    if (e.target.classList.contains("icon-delete-all")) {
+      deleteAllCookies();
     }
   });
+  function showToastMessage(msg) {
+    toastMessage.innerText = msg;
+    document.getElementById("copySuccess").classList.remove("hide");
+    hideCopySuccess();
+  }
   function hideCopySuccess() {
     setTimeout(function () {
       document.getElementById("copySuccess").classList.add("hide");
@@ -149,8 +181,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .writeText(text)
         .then(function () {
           console.log("Text copied to clipboard!");
-          document.getElementById("copySuccess").classList.remove("hide");
-          hideCopySuccess();
+          showToastMessage(textCopied);
         })
         .catch(function (err) {
           console.error("Failed to copy: ", err);
@@ -167,8 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       try {
         document.execCommand("copy");
         console.log("Text copied to clipboard!");
-        document.getElementById("copySuccess").classList.remove("hide");
-        hideCopySuccess();
+        showToastMessage(textCopied);
       } catch (err) {
         console.error("Failed to copy: ", err);
       }
@@ -200,6 +230,7 @@ function deleteCookie(cookieName, rowID) {
       }, () => {
         // Check if the cookie was successfully deleted
         if (chrome.runtime.lastError) {
+          showToastMessage(`Error deleting cookie: ${chrome.runtime.lastError}`);
           console.error(`Error deleting cookie: ${chrome.runtime.lastError}`);
         } else {
           // Remove the corresponding row from the table
@@ -207,6 +238,8 @@ function deleteCookie(cookieName, rowID) {
           if (rowElement) {
             rowElement.remove();
             console.log(`Cookie "${cookieName}" deleted and row "${rowID}" removed.`);
+            showToastMessage(`Cookie "${cookieName}" deleted.`);
+            hideCopySuccess();
           }
         }
       });
@@ -218,19 +251,28 @@ function deleteCookie(cookieName, rowID) {
 }
   // Function to delete all cookies for the current tab's domain
 function deleteAllCookies() {
-  chrome.cookies.getAll({ url: window.location.href }, function(cookies) {
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      // Construct the cookie URL from its domain
-      var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
-      // Remove the cookie by name
-      chrome.cookies.remove({
-        url: cookieUrl,
-        name: cookie.name
-      });
-    }
-    // Notify user that cookies have been deleted
-    console.log('All cookies deleted for the current domain.');
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    const activeTab = tabs[0];
+    const tabUrl = activeTab.url;
+    chrome.cookies.getAll({ url: tabUrl }, function(cookies) {
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        // Construct the cookie URL from its domain
+        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+        // Remove the cookie by name
+        chrome.cookies.remove({
+          url: cookieUrl,
+          name: cookie.name
+        });
+      }
+      // Notify user that cookies have been deleted
+      while (cookiesBody.firstChild) {
+        cookiesBody.removeChild(cookiesBody.firstChild);
+      }
+      console.log('All cookies deleted for the current domain.');
+      showToastMessage(`All cookies deleted for the current domain.`);
+      document.body.classList.add("no-cookies");
+    });
   });
 }
 });
